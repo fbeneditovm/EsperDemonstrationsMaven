@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.cor.cep.util.RandomTemperatureEventGenerator;
+import com.cor.cep.util.RandomEventGenerator;
 
 /**
  * Entry point for the Demo. Run this from your IDE, or from the command line using 'mvn exec:java'.
@@ -36,7 +36,7 @@ public class StartDemo {
         BeanFactory factory = (BeanFactory) appContext;
 
         // Start Demo
-        RandomTemperatureEventGenerator generator = (RandomTemperatureEventGenerator) factory.getBean("eventGenerator");
+        RandomEventGenerator generator = (RandomEventGenerator) factory.getBean("eventGenerator");
         generator.startSendingTemperatureReadings(noOfTemperatureEvents);
 
     }

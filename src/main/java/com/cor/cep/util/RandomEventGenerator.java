@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.cor.cep.event.TemperatureEvent;
+import com.cor.cep.event.*;
 
 import com.cor.cep.handler.TemperatureEventHandler;
 
@@ -19,10 +19,10 @@ import com.cor.cep.handler.TemperatureEventHandler;
  * TemperatureEventHandler.
  */
 @Component
-public class RandomTemperatureEventGenerator {
+public class RandomEventGenerator {
 
     /** Logger */
-    private static Logger LOG = LoggerFactory.getLogger(RandomTemperatureEventGenerator.class);
+    private static Logger LOG = LoggerFactory.getLogger(RandomEventGenerator.class);
 
     /** The TemperatureEventHandler - wraps the Esper engine and processes the Events  */
     @Autowired
@@ -41,12 +41,23 @@ public class RandomTemperatureEventGenerator {
                 LOG.debug(getStartingMessage());
                 
                 int count = 0;
+                int roomId = 1;
                 while (count < noOfTemperatureEvents) {
-                    TemperatureEvent ve = new TemperatureEvent(new Random().nextInt(500), new Date());
-                    temperatureEventHandler.handle(ve);
-                    count++;
+                    if(roomId>3) roomId = 1;
+                    TemperatureEvent tpEvent = new TemperatureEvent(roomId, new Random().nextInt(500), new Date());
+                    temperatureEventHandler.handle(tpEvent);
                     try {
                         Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        LOG.error("Thread Interrupted", e);
+                    }
+                    double radiation = (double) new Random().nextInt(6) +new Random().nextDouble();
+                    RadiationEvent rdEvent = new RadiationEvent(roomId, radiation, new Date());
+                    temperatureEventHandler.handle(rdEvent);
+                    count++;
+                    roomId++;
+                    try {
+                        Thread.sleep(600);
                     } catch (InterruptedException e) {
                         LOG.error("Thread Interrupted", e);
                     }
@@ -61,7 +72,7 @@ public class RandomTemperatureEventGenerator {
         StringBuilder sb = new StringBuilder();
         sb.append("\n\n************************************************************");
         sb.append("\n* STARTING - ");
-        sb.append("\n* PLEASE WAIT - TEMPERATURES ARE RANDOM SO MAY TAKE");
+        sb.append("\n* PLEASE WAIT - READINGS ARE RANDOM SO MAY TAKE");
         sb.append("\n* A WHILE TO SEE WARNING AND CRITICAL EVENTS!");
         sb.append("\n************************************************************\n");
         return sb.toString();

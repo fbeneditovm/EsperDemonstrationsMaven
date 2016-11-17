@@ -8,10 +8,13 @@ import java.util.Date;
  */
 public class TemperatureEvent {
 
+     /** The room in which the event occurred. */
+    private int roomId;
+
     /** Temperature in Celcius. */
     private int temperature;
     
-    /** Time temerature reading was taken. */
+    /** Time temperature reading was taken. */
     private Date timeOfReading;
     
     /**
@@ -19,15 +22,24 @@ public class TemperatureEvent {
      * @param value Temperature in Celsius.
      */
     /**
-     * Temeratur constructor.
+     * Temperature constructor.
      * @param temperature Temperature in Celsius
      * @param timeOfReading Time of Reading
      */
-    public TemperatureEvent(int temperature, Date timeOfReading) {
+    public TemperatureEvent(int roomId, int temperature, Date timeOfReading) {
+        this.roomId = roomId;
         this.temperature = temperature;
         this.timeOfReading = timeOfReading;
     }
-
+    
+    /**
+     * Get the id of the Room
+     * @return the roomId
+     */
+    public int getRoomId() {
+        return roomId;
+    }
+    
     /**
      * Get the Temperature.
      * @return Temperature in Celsius
