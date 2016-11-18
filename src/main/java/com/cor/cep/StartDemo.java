@@ -1,5 +1,6 @@
 package com.cor.cep;
 
+import com.cor.cep.sddl.HelloCoreServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
@@ -36,8 +37,12 @@ public class StartDemo {
         BeanFactory factory = (BeanFactory) appContext;
 
         // Start Demo
+        HelloCoreServer sddlServer = (HelloCoreServer) factory.getBean("coreServer");
+        
+        /*
         RandomEventGenerator generator = (RandomEventGenerator) factory.getBean("eventGenerator");
         generator.startSendingTemperatureReadings(noOfTemperatureEvents);
+        */
 
     }
 

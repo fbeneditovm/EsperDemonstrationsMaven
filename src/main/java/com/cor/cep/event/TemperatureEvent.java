@@ -1,12 +1,15 @@
 package com.cor.cep.event;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Immutable Temperature Event class. The process control system creates these events. The
  * TemperatureEventHandler picks these up and processes them.
  */
-public class TemperatureEvent {
+public class TemperatureEvent implements Serializable{
+    
+    private static final long serialVersionUID = 6093226637618022647L;
 
      /** The room in which the event occurred. */
     private int roomId;
