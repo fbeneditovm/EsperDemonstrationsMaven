@@ -1,3 +1,6 @@
+/**
+ * Project Based on https://github.com/corsoft/esper-demo-nuclear.git
+ */
 package com.cor.cep.handler;
 
 import GUI.EventLogScreen;
@@ -6,8 +9,6 @@ import GUI.WarningScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -17,45 +18,30 @@ import com.cor.cep.util.*;
 
 import com.espertech.esper.client.*;
 
-import java.text.DecimalFormat;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.Random;
-
 /**
- * This class handles incoming Temperature Events. It processes them through the EPService, to which
- * it has attached the 3 queries.
+ * This class Configures the EsperCEP environment 
+ * as well as handles incoming Events. 
+ * It processes them through the EPService, to which it has attached the queries.
  */
 @Component
 @Scope(value = "singleton")
-public class TemperatureEventHandler implements InitializingBean{
+public class EventHandler implements InitializingBean{
 
     /** Logger */
-    private static Logger LOG = LoggerFactory.getLogger(TemperatureEventHandler.class);
+    private static Logger LOG = LoggerFactory.getLogger(EventHandler.class);
 
-    /** Esper service */
-    private EPServiceProvider epService;
-    private EPStatement criticalEventStatement;
-    private EPStatement warningEventStatement;
-    private EPStatement monitorEventStatement;
-
-    @Autowired
-    @Qualifier("criticalEventSubscriber")
-    private StatementSubscriber criticalEventSubscriber;
-
-    @Autowired
-    @Qualifier("warningEventSubscriber")
-    private StatementSubscriber warningEventSubscriber;    
+    private EPServiceProvider epService; //The esper service  
     
-    EventLogScreen logScreen;
-    WarningScreen warningScreen;
+    EventLogScreen logScreen; //The screen to show a log of the simple events
+    WarningScreen warningScreen; //The scren to show the complex warning events
     
+    /** The Listeners */
     RadiationWindowListener rwListener;
     RadiationBatchListener rbListener;
-    
     TemperatureWindowListener twListener;
     TemperatureBatchListener tbListener;
     
+    /** The Statements (EPL Queries) */
     EPStatement last5RadiationStatement;
     EPStatement batch5RadiationStatement;
     
@@ -63,7 +49,7 @@ public class TemperatureEventHandler implements InitializingBean{
     EPStatement batch5TemperatureStatement;
     
     /**
-     * Get the Events by Batch
+     * Get the Events by Batch.
      */
     public void getByBatch(){
         last5RadiationStatement.removeAllListeners();
@@ -75,7 +61,7 @@ public class TemperatureEventHandler implements InitializingBean{
     }
     
     /**
-     * Get the Events by Window
+     * Get the Events by Window.
      */
     public void getByWindow(){
         batch5RadiationStatement.removeAllListeners();
@@ -88,10 +74,11 @@ public class TemperatureEventHandler implements InitializingBean{
     
 
     /**
-     * Configure Esper Statement(s).
+     * Configure the Esper Environment.
      */
     public void initService() {
         
+        /** The Screen Configuration */
         logScreen = new EventLogScreen(this);
         warningScreen = new WarningScreen();
         rwListener = new RadiationWindowListener();
@@ -103,12 +90,13 @@ public class TemperatureEventHandler implements InitializingBean{
         tbListener = new TemperatureBatchListener();
         tbListener.setScreen(logScreen);
         
-        //Start GUI
+        /** Start GUI */
         logScreen.setVisible(true);
         warningScreen.setVisible(true);
 
         LOG.debug("Initializing Servcie ..");
-        //Relational DB Configuration
+        
+        /** Relational DB Configuration */
         ConfigurationDBRef dbConfig = new ConfigurationDBRef();
         dbConfig.setDriverManagerConnection("org.postgresql.Driver",
                                             "jdbc:postgresql://localhost:5432/EsperDemonstrations", 
@@ -116,7 +104,7 @@ public class TemperatureEventHandler implements InitializingBean{
                                             "esperdemonstrations");
         dbConfig.setMetadataOrigin(ConfigurationDBRef.MetadataOriginEnum.SAMPLE);
         
-        //Configuration
+        /** Setting the Esper Configuration and EPService */
         Configuration config = new Configuration();
         config.addImport("com.cor.cep.util.*");
         config.addDatabaseReference("Postgresql", dbConfig);
@@ -124,7 +112,8 @@ public class TemperatureEventHandler implements InitializingBean{
         epService = EPServiceProviderManager.getDefaultProvider(config);
         EPAdministrator epAdm = epService.getEPAdministrator();
         
-        //EPLStatement and Listener registration
+        
+        /** Start of EPLStatement and Listener registration */
         last5RadiationStatement = epAdm.createEPL(EPLQueries.getLast5Radiation());
         batch5RadiationStatement = epAdm.createEPL(EPLQueries.getBatch5Radiation());
         last5RadiationStatement.addListener(rwListener);
@@ -161,38 +150,12 @@ public class TemperatureEventHandler implements InitializingBean{
         TemperatureRadiationWarningListener trwl = new TemperatureRadiationWarningListener();
         warningTemperatureRadiationStatement.addListener(trwl);
         trwl.setScreen(warningScreen);
-        
-        createCriticalTemperatureCheckExpression();
-        createWarningTemperatureCheckExpression();
-
+        /** End of EPLStatement and Listener registration */
     }
-
-    /**
-     * EPL to check for a sudden critical rise across 4 events, where the last event is 1.5x greater
-     * than the first event. This is checking for a sudden, sustained escalating rise in the
-     * temperature
-     */
-    private void createCriticalTemperatureCheckExpression() {
-        
-        LOG.debug("create Critical Temperature Check Expression");
-        criticalEventStatement = epService.getEPAdministrator().createEPL(criticalEventSubscriber.getStatement());
-        criticalEventStatement.setSubscriber(criticalEventSubscriber);
-    }
-
-    /**
-     * EPL to check for 2 consecutive Temperature events over the threshold - if matched, will alert
-     * listener.
-     */
-    private void createWarningTemperatureCheckExpression() {
-
-        LOG.debug("create Warning Temperature Check Expression");
-        warningEventStatement = epService.getEPAdministrator().createEPL(warningEventSubscriber.getStatement());
-        warningEventStatement.setSubscriber(warningEventSubscriber);
-    }
-
     
     /**
      * Handle the incoming TemperatureEvent.
+     * @param event the event to handle
      */
     public void handle(TemperatureEvent event) {
 
@@ -203,6 +166,7 @@ public class TemperatureEventHandler implements InitializingBean{
     
     /**
      * Handle the incoming RadiationEvent.
+     * @param event the event to handle
      */
     public void handle(RadiationEvent event) {
 

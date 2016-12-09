@@ -1,40 +1,47 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package GUI;
 
 import java.util.LinkedList;
 
 /**
- *
+ * A Screen to show Warnings and Critical Warnings
  * @author fbeneditovm
  */
 public class WarningScreen extends javax.swing.JFrame {
 
-    LinkedList<String> warnings;
+    private LinkedList<String> warnings; //Stores all the warnings received
 
     /**
-     * Creates new form WarningScreen
+     * Creates new form WarningScreen.
      */
     public WarningScreen() {
         warnings = new LinkedList<String>();
         initComponents();
     }
-
+    
+    /**
+     * Receives new Warning Events to display
+     * @param inEvents the events received
+     */
     public void newWarning(LinkedList<String> inEvents){
         this.warnings.addAll(inEvents);
         updateList();
     }
-
+    
+    /**
+     * Receives new Critical Warning Events to display
+     * @param inEvents the events received
+     */
     public void newCritical(LinkedList<String> inEvents){
         this.warnings.addAll(inEvents);
         this.setVisible(true);
         this.setAlwaysOnTop(true);
         updateList();
     }
-
+    
+    /**
+     * Updates both the displayed insert list and the remove list with events in the
+     * respective linked lists.
+     */ 
     public void updateList(){
         String[] data = warnings.toArray(new String[warnings.size()]);
         warningList.setListData(data);

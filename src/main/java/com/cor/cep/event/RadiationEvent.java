@@ -1,20 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.cor.cep.event;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
- *
+ * A Simple Radiation Event
  * @author fbeneditovm
  */
-public class RadiationEvent implements Serializable {
-    
-    private static final long serialVersionUID = 6093226637618022647L;
+public class RadiationEvent{
     
     /** The room in which the event occurred. */
     private int roomId;

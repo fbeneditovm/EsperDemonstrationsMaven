@@ -13,13 +13,22 @@ import java.util.Date;
 import java.util.LinkedList;
 
 public class TemperatureRadiationWarningListener implements UpdateListener{
-    WarningScreen screen;
-    LinkedList<String> inEvents;
+    WarningScreen screen; //The Warning Screen used to display the Events
+    LinkedList<String> inEvents; //Stores the new events received (InsertStream)
     
+     /**
+     * Sets the Warning Screen
+     * @param screen the warning Screen used to display the Events
+     */
     public void setScreen(WarningScreen screen){
         this.screen = screen;
     }
     
+    /**
+     * The update method that receives the new and old events
+     * @param newData An event bean with the new events
+     * @param oldData An event bean with the old events
+     */
     @Override
     public void update(EventBean[] newData, EventBean[] oldData) {
         inEvents = new LinkedList<String>();
@@ -32,7 +41,7 @@ public class TemperatureRadiationWarningListener implements UpdateListener{
         System.out.println("Event received: "+ newData[0].getUnderlying());
         
         
-        //Send Events to GUI
+        /** Send Events to GUI */
         screen.newWarning(inEvents);
     }
 }

@@ -1,72 +1,59 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package GUI;
 
-import com.cor.cep.handler.TemperatureEventHandler;
+import com.cor.cep.handler.EventHandler;
 import static java.awt.EventQueue.invokeLater;
 import java.util.LinkedList;
 import static java.util.logging.Level.SEVERE;
-import static java.util.logging.Logger.getLogger;
 import static javax.swing.UIManager.getInstalledLookAndFeels;
-import static javax.swing.UIManager.setLookAndFeel;
 import static java.util.logging.Logger.getLogger;
 import static javax.swing.UIManager.setLookAndFeel;
 
 /**
- *
+ * A Screen to show all the events simple events received
  * @author fbeneditovm
  */
 public class EventLogScreen extends javax.swing.JFrame {
-    TemperatureEventHandler handler;
-    LinkedList<String> inEvents;
-    LinkedList<String> rmEvents;
+    private EventHandler handler; //the event handler that will display events in this screen 
+    private LinkedList<String> inEvents; //Stores the new events received (InsertStream)
+    private LinkedList<String> rmEvents; //Stores the old events received (RemoveStream)
 
     /**
-     * Creates new form EventLogScreen
+     * A constructor for this screen that receives a event handler
+     * @param handler the event handler that will display events in this screen
      */
-    public EventLogScreen(TemperatureEventHandler handler) {
+    public EventLogScreen(EventHandler handler) {
         this.handler = handler;
         inEvents = new LinkedList<String>();
         rmEvents = new LinkedList<String>();
         initComponents();
     }
-
+    
+    /**
+     * A constructor for this screen that does not receive a event handler
+     * the handler is then set has null.
+     */
     public EventLogScreen(){
         this.handler = null;
         inEvents = new LinkedList<String>();
         rmEvents = new LinkedList<String>();
         initComponents();
     }
-
-    /*
-    public void addInStreamEvent(String event){
-        inEvents.removeFirst();
-        inEvents.add(event);
-        String[] data = inEvents.toArray(new String[inEvents.size()]);
-        insertList.setListData(data);
-    }
-
-    public void addRmStreamEvent(String event){
-        rmEvents.removeFirst();
-        rmEvents.add(event);
-        String[] data = rmEvents.toArray(new String[rmEvents.size()]);
-        removeList.setListData(data);
-    }
-
-    public void newRmStreamBatch(String[] batch){
-        removeList.setListData(batch);
-    }
-    */
-
+    
+    /**
+     * Receives the events to show
+     * @param inEvents the new events received (InsertStream)
+     * @param rmEvents the old events received (RemoveStream)
+     */
     public void newEvents(LinkedList<String> inEvents, LinkedList<String> rmEvents){
         this.inEvents.addAll(inEvents);
         this.rmEvents.addAll(rmEvents);
         updateLog();
     }
-
+    
+    /**
+     * Updates both the displayed insert list and the remove list with events in the
+     * respective linked lists.
+     */
     public void updateLog(){
         String[] data1 = inEvents.toArray(new String[inEvents.size()]);
         insertList.setListData(data1);
@@ -152,7 +139,12 @@ public class EventLogScreen extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
+    /**
+     * Switches between getting the events By Batch or Regular Window
+     * by requesting it to the event handler
+     * @param evt 
+     */
     private void showbyBatchToggleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showbyBatchToggleActionPerformed
         inEvents = new LinkedList<String>();
         rmEvents = new LinkedList<String>();

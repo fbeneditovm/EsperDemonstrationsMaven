@@ -11,8 +11,6 @@
 
 	<bean id="eventGenerator"
 		class="com.cor.cep.util.RandomEventGenerator" />
-	<bean id="coreServer"
-		class="com.cor.cep.sdd.HelloCoreServer" />
 
 
 </beans>
