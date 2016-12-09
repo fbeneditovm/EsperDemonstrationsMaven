@@ -1,12 +1,10 @@
 package com.cor.cep.subscriber;
 
 import GUI.EventLogScreen;
-import com.cor.cep.util.Temperatures;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.UpdateListener;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.Map;
 
 /**
  * Update Listener that gets the last 5 RadiationEvents.

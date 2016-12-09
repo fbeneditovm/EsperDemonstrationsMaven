@@ -122,34 +122,16 @@ public class EventHandler implements InitializingBean{
         batch5TemperatureStatement = epAdm.createEPL(EPLQueries.getBatch5Temperature());
         last5TemperatureStatement.addListener(twListener);
         
-        EPStatement ctxRadSegmentedByRoom = epAdm.createEPL(EPLQueries.createCtxRadSegmentedByRoom());
-        EPStatement ctxTempSegmentedByRoom = epAdm.createEPL(EPLQueries.createCtxTempSegmentedByRoom());
-        EPStatement ctx20secAfterTemp = epAdm.createEPL(EPLQueries.createCtx20secAfterTemperature());
-        
         EPStatement warningTemperatureStatement = epAdm.createEPL(EPLQueries.warningTemperature());
         TemperatureWarningListener twl = new TemperatureWarningListener();
         warningTemperatureStatement.addListener(twl);
         twl.setScreen(warningScreen);
-        
-        EPStatement criticalRadiationStatement = epAdm.createEPL(EPLQueries.criticalRadiation());
-        RadiationCriticalListener rcl = new RadiationCriticalListener();
-        criticalRadiationStatement.addListener(rcl);
-        rcl.setScreen(warningScreen);
         
         EPStatement warningRadiationStatement = epAdm.createEPL(EPLQueries.warningRadiation());
         RadiationWarningListener rwl = new RadiationWarningListener();
         warningRadiationStatement.addListener(rwl);
         rwl.setScreen(warningScreen);
         
-        EPStatement criticalTemperatureRadiationStatement = epAdm.createEPL(EPLQueries.criticalTemperatureRadiation());
-        TemperatureRadiationCriticalListener trcl = new TemperatureRadiationCriticalListener();
-        criticalTemperatureRadiationStatement.addListener(trcl);
-        trcl.setScreen(warningScreen);
-        
-        EPStatement warningTemperatureRadiationStatement = epAdm.createEPL(EPLQueries.warningTemperatureRadiation());
-        TemperatureRadiationWarningListener trwl = new TemperatureRadiationWarningListener();
-        warningTemperatureRadiationStatement.addListener(trwl);
-        trwl.setScreen(warningScreen);
         /** End of EPLStatement and Listener registration */
     }
     

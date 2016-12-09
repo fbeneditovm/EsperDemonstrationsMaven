@@ -35,7 +35,7 @@ public class RadiationWarningListener implements UpdateListener{
         
         /** Store Events in Arrays */
         for(int i=0; i<newData.length; i++){
-            inEvents.add("WARNING: Room: "+newData[i].get("roomId")+" Radiation levels are too high: "+new DecimalFormat("#.###").format((Double)newData[i].get("radiation"))+" uSv "+
+            inEvents.add("WARNING: Room: "+newData[i].get("room")+" Radiation levels are too high: "+new DecimalFormat("#.###").format((Double)newData[i].get("rad"))+" uSv "+
                           "- at "+(Date)newData[i].get("timeOfReading"));
             System.out.println("Event received: "+ newData[i].getUnderlying());
         }

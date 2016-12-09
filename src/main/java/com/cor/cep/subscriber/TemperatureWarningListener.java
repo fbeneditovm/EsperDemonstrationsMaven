@@ -46,7 +46,7 @@ public class TemperatureWarningListener implements UpdateListener{
                 System.out.println("We got a null");
                 break;
             }
-            inEvents.add("WARNING: Room "+newData[i].get("room")+" Temperature levels are too high: "+new DecimalFormat("#.###").format((Integer)newData[i].get("tempK"))+" K "+
+            inEvents.add("WARNING: Room "+newData[i].get("room")+" Temperature levels are too high: "+new DecimalFormat("#.###").format((Integer)newData[i].get("temp"))+" K "+
                           "- at "+(Date)newData[i].get("timeOfReading"));
             System.out.println("Event received: "+ newData[i].getUnderlying());
         }
