@@ -37,7 +37,7 @@ public class TemperatureRadiationWarningListener implements UpdateListener{
         
         inEvents.add("WARNING: Room "+newData[0].get("roomId")+" High Temp: "+(Integer)newData[0].get("temp")+"º C "+
                           " followed by High Rad: "+new DecimalFormat("#.###").format((Double)newData[0].get("rad"))+" uSv "+
-                          "- at "+new Date((Long)newData[0].get("timeMillisec")));
+                          "- at "+(Date)newData[0].get("timeOfReading"));
         System.out.println("Event received: "+ newData[0].getUnderlying());
         
         

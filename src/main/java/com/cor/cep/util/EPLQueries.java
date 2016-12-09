@@ -67,82 +67,77 @@ public class EPLQueries {
     
     /**
      * @Selects: Temperature in Kelvin, roomId, Date with the time of reading
-     * @When: Temperature in Kelvin is above 500
+     * @When: Temperature in Kelvin is above 300
      * @Uses: method invocation to convert celsius to Kelvin
      */
     public static String warningTemperature(){
-        return "select temperatures.kelvin as tempK, tempEvt.roomId as room, tempEvt.timeOfReading as timeOfReading from " +
-               "\nTemperatureEvent.std:lastevent() as tempEvt, "
-                + "\nmethod:com.cor.cep.util.Temperatures.getFromC(temperature) as temperatures "
-                + "\nwhere temperatures.kelvin>500";
+        return "select temperatures.kelvin as tempK, tempEvt.roomId as room, tempEvt.timeOfReading as timeOfReading from "
+                + "pattern[ "
+                + "every tempEvt=TemperatureEvent(com.cor.cep.util.Temperatures.isCAboveThresholdK(temperature, 300))], "
+                + "method:com.cor.cep.util.Temperatures.getFromC(tempEvt.temperature) as temperatures ";
     }
     
     /**
      * @Selects: Average Radiation, roomName, Date with the time of reading
      * @When: In a window of 10 sec more than 2 events have radiation above 5
-     * @Uses: database data retrieval
+     * @Uses: match recognize
      */
     public static String criticalRadiation(){
-        return    "context CtxRadSegmentedByRoom "
-                + "\nselect avg(RadEvt.radiation) as avgRd, "
-                    + "\nRadEvt.timeOfReading as timeOfReading, "
-                    + "\npsql.roomName as roomName "
-                + "\nfrom RadiationEvent.win:time(10 sec) as RadEvt, "
-                + "\nsql:Postgresql[' SELECT rTb.\"roomName\""
-                                      + "\nFROM \"public\".\"Room\" as rTb "
-                                      + "\nWHERE rTb.\"roomId\" = ${RadEvt.roomId} '] as psql"
-                + "\nwhere radiation>5 "
-                + "\nhaving count(*)>2";
+        return    "select * from RadiationEvent "
+                + "match_recognize ( "
+                    + "partition by roomId "
+                    + "measures avg(B.radiation) as avgRd, "
+                        + "A.timeOfReading as timeOfReading, "//==A[0].timeofReading
+                        + "A.roomId as roomId "
+                    + "pattern (A B*) "
+                        + "interval 10 seconds "
+                        + "define "
+                        + "A as A.radiation>5, "
+                        + "B as B.radiation>5)";
     }
+    
     /**
      * @Selects: Radiation, roomName, Date with the time of reading
      * @When: Radiation is above 4
-     * @Uses: database data retrieval
+     * @Uses: match recognize
      */
     public static String warningRadiation(){
-        return  "context CtxRadSegmentedByRoom "
-                +"\nselect context.key1 as roomId, "
-                      + "\nRadEvt.radiation as radiation, "
-                      + "\nRadEvt.timeOfReading as timeOfReading, "
-                      + "\npsql.roomName as roomName "
-                + "\nfrom RadiationEvent.win:length_batch(5) as RadEvt, "
-                + "\nsql:Postgresql[' SELECT rTb.\"roomName\""
-                                      + "\nFROM \"public\".\"Room\" as rTb "
-                                      + "\nWHERE rTb.\"roomId\" = ${RadEvt.roomId} '] as psql"
-                + "\nwhere radiation>4";
+        return  "select * from RadiationEvent "
+              + "match_recognize ( "
+                    + "partition by roomId "
+                    + "measures A.radiation as radiation, "
+                        + "A.timeOfReading as timeOfReading, "//==A[0].timeofReading
+                        + "A.roomId as roomId "
+                    + "pattern (A) "
+                        + "define "
+                        + "A as A.radiation>4)";
     }
     
     /**
      * @Selects: Temperature, Radiation, RoomID, the time in milliseconds
      * @When: Radiation is over 4 within 20 after Temperature is over 400
-     * @Uses: database data retrieval
      */
     public static String criticalTemperatureRadiation(){
-        return "context Ctx20secAfterTemperature "
-                + "select context.tp.roomId as roomId, "
-                       + "context.tp.temperature as temp, "
-                       + "context.startTime as timeMillisec, "
-                       + "radEvt.radiation as rad "
-                + "from RadiationEvent.std:lastevent() as radEvt "
-                + "where context.tp.roomId = radEvt.roomId and "
-                       + "context.tp.temperature>400 and radEvt.radiation>4";
+        return "select tempEvt.roomId as roomId, "
+                + "tempEvt.temperature as temp, "
+                + "tempEvt.timeOfReading as timeOfReading, "
+                + "radEvt.radiation as rad "
+                + "from pattern [(every tempEvt=TemperatureEvent(temperature>400) -> "
+                    + "radEvt=RadiationEvent(radiation>4) where timer:within(20 sec))]";
     }
     
     /**
      * @Selects: Temperature, Radiation, RoomID, the time in milliseconds
      * @When: Radiation is over 3.5 within 20 after Temperature is over 300
      *        excluding the cases that fit the criticalTemperatureRadiation query
-     * @Uses: database data retrieval
      */
     public static String warningTemperatureRadiation(){
-        return "context Ctx20secAfterTemperature "
-                + "select context.tp.roomId as roomId, "
-                       + "context.tp.temperature as temp, "
-                       + "context.startTime as timeMillisec, "
-                       + "radEvt.radiation as rad "
-                + "from RadiationEvent as radEvt "
-                + "where context.tp.roomId = radEvt.roomId and "
-                       + "radEvt.radiation>3.5 and "
-                       + "not(context.tp.temperature>400 and radEvt.radiation>4)";
+        return "select tempEvt.roomId as roomId, "
+                + "tempEvt.temperature as temp, "
+                + "tempEvt.timeOfReading as timeOfReading, "
+                + "radEvt.radiation as rad "
+                + "from pattern [(every tempEvt=TemperatureEvent(temperature>300) -> "
+                    + "radEvt=RadiationEvent(radiation>3.5) where timer:within(20 sec))]"
+                + "where not(tempEvt.temperature>400 and radEvt.radiation>4)";
     }
 }

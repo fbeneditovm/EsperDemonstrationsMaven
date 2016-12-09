@@ -38,7 +38,6 @@ public class TemperatureWarningListener implements UpdateListener{
     public void update(EventBean[] newData, EventBean[] oldData) {
         inEvents = new LinkedList<String>();
         
-        System.out.println("Number of news RdWarning "+newData.length);
         
         //Store Events in Arrays
         for(int i=0; i<newData.length; i++){
