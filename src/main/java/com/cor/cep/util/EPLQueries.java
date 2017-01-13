@@ -67,7 +67,7 @@ public class EPLQueries {
     
     /**
      * @Selects: Temperature in Kelvin, roomId, Date with the time of reading
-     * @When: Temperature in Kelvin is above 500
+     * @When: Temperature in Kelvin is above 600
      * @Uses: method invocation to convert celsius to Kelvin
      */
     public static String warningTemperature(){
