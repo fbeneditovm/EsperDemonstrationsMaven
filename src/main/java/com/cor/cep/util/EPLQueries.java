@@ -42,12 +42,12 @@ public class EPLQueries {
     
     /**
      * @Selects: Temperature in Kelvin, roomId, Date with the time of reading
-     * @When: Temperature 9s above 250
+     * @When: Temperature is above 400
      * @Uses: filter
      */
     public static String warningTemperature(){
         return "select tempEvt.temperature as temp, tempEvt.roomId as room, tempEvt.timeOfReading as timeOfReading from " +
-               "\nTemperatureEvent(temperature > 250) as tempEvt";
+               "\nTemperatureEvent(temperature > 400) as tempEvt";
     }
     
     /**
