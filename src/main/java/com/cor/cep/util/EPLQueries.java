@@ -67,19 +67,20 @@ public class EPLQueries {
     
     /**
      * @Selects: Temperature in Kelvin, roomId, Date with the time of reading
-     * @When: Temperature in Kelvin is above 300
+     * @When: Temperature in Kelvin is above 600
      * @Uses: method invocation to convert celsius to Kelvin
      */
     public static String warningTemperature(){
         return "select temperatures.kelvin as tempK, tempEvt.roomId as room, tempEvt.timeOfReading as timeOfReading from "
                 + "pattern[ "
-                + "every tempEvt=TemperatureEvent(com.cor.cep.util.Temperatures.isCAboveThresholdK(temperature, 300))], "
+                + "every tempEvt=TemperatureEvent(com.cor.cep.util.Temperatures.isCAboveThresholdK(temperature, 600))], "
                 + "method:com.cor.cep.util.Temperatures.getFromC(tempEvt.temperature) as temperatures ";
     }
     
     /**
      * @Selects: Average Radiation, roomName, Date with the time of reading
-     * @When: In a window of 10 sec more than 2 events have radiation above 5
+     * @When: In a window of 15 sec more than 2 events in the same room
+     *        have radiation above 4
      * @Uses: match recognize
      */
     public static String criticalRadiation(){
@@ -87,13 +88,13 @@ public class EPLQueries {
                 + "match_recognize ( "
                     + "partition by roomId "
                     + "measures avg(B.radiation) as avgRd, "
-                        + "A.timeOfReading as timeOfReading, "//==A[0].timeofReading
+                        + "A.timeOfReading as timeOfReading, "
                         + "A.roomId as roomId "
                     + "pattern (A B*) "
-                        + "interval 10 seconds "
+                        + "interval 15 seconds "
                         + "define "
-                        + "A as A.radiation>5, "
-                        + "B as B.radiation>5)";
+                        + "A as A.radiation>4, "
+                        + "B as B.radiation>4)";
     }
     
     /**
@@ -104,9 +105,8 @@ public class EPLQueries {
     public static String warningRadiation(){
         return  "select * from RadiationEvent "
               + "match_recognize ( "
-                    + "partition by roomId "
                     + "measures A.radiation as radiation, "
-                        + "A.timeOfReading as timeOfReading, "//==A[0].timeofReading
+                        + "A.timeOfReading as timeOfReading, "
                         + "A.roomId as roomId "
                     + "pattern (A) "
                         + "define "

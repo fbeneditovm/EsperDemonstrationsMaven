@@ -13,13 +13,6 @@
 	</properties>
         
 	<dependencies>
-                <dependency>
-                    <groupId>sddl</groupId>
-                    <artifactId>com.sddl</artifactId>
-                    <version>1.0</version>
-                    <scope>system</scope>
-                    <systemPath>${project.basedir}/src/main/resources/contextnet-2.5.jar</systemPath>
-                </dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
