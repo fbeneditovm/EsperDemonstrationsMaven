@@ -35,7 +35,7 @@ public class RadiationCriticalListener implements UpdateListener{
         
         /** Store Events in Arrays */
         for(int i=0; i<newData.length; i++){
-            inEvents.add("CRITICAL: Room: "+newData[i].get("roomId")+" Average Radiation: "+new DecimalFormat("#.###").format((Double)newData[i].get("avgRd"))+" uSv "+
+            inEvents.add("CRITICAL: "+newData[i].get("roomName")+" Average Radiation: "+new DecimalFormat("#.###").format((Double)newData[i].get("avgRd"))+" uSv "+
                           "- at "+(Date)newData[i].get("timeOfReading"));
             for(String buffer : inEvents){
                 System.out.println(buffer);

@@ -35,11 +35,11 @@ public  class TemperatureRadiationCriticalListener implements UpdateListener{
         
         inEvents.add("CRITICAL: Room "+newData[0].get("roomId")+" VERY High Temp: "+(Integer)newData[0].get("temp")+" º C "+
                           " followed by VERY High Rad: "+new DecimalFormat("#.###").format((Double)newData[0].get("rad"))+" uSv "+
-                          "- at "+(Date)newData[0].get("timeOfReading"));
+                          "- at "+new Date((Long)newData[0].get("timeMillisec")));
         System.out.println("Event received: "+ newData[0].getUnderlying());
         
         
         /** Send Events to GUI */
-        screen.newWarning(inEvents);
+        screen.newCritical(inEvents);
     }
 }

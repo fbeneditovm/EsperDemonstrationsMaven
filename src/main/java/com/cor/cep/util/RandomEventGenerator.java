@@ -45,14 +45,14 @@ public class RandomEventGenerator {
                 int roomId = 1;
                 while (count < noOfTemperatureEvents) {
                     if(roomId>3) roomId = 1;
-                    TemperatureEvent tpEvent = new TemperatureEvent(roomId, new Random().nextInt(500), new Date());
+                    TemperatureEvent tpEvent = new TemperatureEvent(roomId, new Random().nextInt(600), new Date());
                     temperatureEventHandler.handle(tpEvent);
                     try {
                         Thread.sleep(200);
                     } catch (InterruptedException e) {
                         LOG.error("Thread Interrupted", e);
                     }
-                    double radiation = (double) new Random().nextInt(6) +new Random().nextDouble();
+                    double radiation = (double) new Random().nextInt(5) +new Random().nextDouble();
                     RadiationEvent rdEvent = new RadiationEvent(roomId, radiation, new Date());
                     temperatureEventHandler.handle(rdEvent);
                     count++;

@@ -74,12 +74,13 @@ public class EPLQueries {
         return "select temperatures.kelvin as tempK, tempEvt.roomId as room, tempEvt.timeOfReading as timeOfReading from " +
                "\nTemperatureEvent.std:lastevent() as tempEvt, "
                 + "\nmethod:com.cor.cep.util.Temperatures.getFromC(temperature) as temperatures "
-                + "\nwhere temperatures.kelvin>500";
+                + "\nwhere temperatures.kelvin>600";
     }
     
     /**
      * @Selects: Average Radiation, roomName, Date with the time of reading
-     * @When: In a window of 10 sec more than 2 events have radiation above 5
+     * @When: In a window of 15 sec more than 2 events in the same room
+     * have radiation above 4
      * @Uses: database data retrieval
      */
     public static String criticalRadiation(){
@@ -87,12 +88,11 @@ public class EPLQueries {
                 + "\nselect avg(RadEvt.radiation) as avgRd, "
                     + "\nRadEvt.timeOfReading as timeOfReading, "
                     + "\npsql.roomName as roomName "
-                + "\nfrom RadiationEvent.win:time(10 sec) as RadEvt, "
+                + "\nfrom RadiationEvent(radiation>4).win:time(15 sec) as RadEvt, "
                 + "\nsql:Postgresql[' SELECT rTb.\"roomName\""
                                       + "\nFROM \"public\".\"Room\" as rTb "
                                       + "\nWHERE rTb.\"roomId\" = ${RadEvt.roomId} '] as psql"
-                + "\nwhere radiation>5 "
-                + "\nhaving count(*)>2";
+                + "\nhaving count(RadEvt)>2";
     }
     /**
      * @Selects: Radiation, roomName, Date with the time of reading
@@ -100,12 +100,10 @@ public class EPLQueries {
      * @Uses: database data retrieval
      */
     public static String warningRadiation(){
-        return  "context CtxRadSegmentedByRoom "
-                +"\nselect context.key1 as roomId, "
-                      + "\nRadEvt.radiation as radiation, "
+        return  "select RadEvt.radiation as radiation, "
                       + "\nRadEvt.timeOfReading as timeOfReading, "
                       + "\npsql.roomName as roomName "
-                + "\nfrom RadiationEvent.win:length_batch(5) as RadEvt, "
+                + "\nfrom RadiationEvent.std:lastevent() as RadEvt, "
                 + "\nsql:Postgresql[' SELECT rTb.\"roomName\""
                                       + "\nFROM \"public\".\"Room\" as rTb "
                                       + "\nWHERE rTb.\"roomId\" = ${RadEvt.roomId} '] as psql"
